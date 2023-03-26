@@ -1,0 +1,36 @@
+# custom bashrc functions examples of inline scripts and continuously running loops automated conditional logical procresses to be run in the background
+
+
+function gpio_control() {
+    # Set GPIO pin number
+    GPIO_PIN=$1
+
+    # Set GPIO pin as output
+    gpio mode $GPIO_PIN out
+
+    # Turn on GPIO pin
+    gpio write $GPIO_PIN 1
+
+    # Wait for 5 seconds
+    sleep 5
+
+    # Turn off GPIO pin
+    gpio write $GPIO_PIN 0
+}
+
+
+function logerr () { 
+    sudo grep -oE "ERROR|WARN" /var/log/*log* | sort |  uniq -c 
+}
+
+
+function fd () {
+    find . -name "$1" 2>/dev/null
+}
+
+
+function mkcd() {
+    mkdir -p "$1"
+    cd "$1"
+}
+

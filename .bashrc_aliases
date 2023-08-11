@@ -1,6 +1,0 @@
-############### BACKUP .BASHRC_ALIASES ###############
-
-alias datacenter='ssh -X research@192.168.1.64'
-alias smalldell='ssh -X sinistercri@192.168.1.243'
-alias masterclient='ssh -X jeremy@192.168.1.105'
-alias touchsmart='ssh -X owner@192.168.1.148'

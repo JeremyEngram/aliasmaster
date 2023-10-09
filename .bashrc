@@ -1,6 +1,4 @@
-# Fig pre block. Keep at the top of this file.
-[[ -f "$HOME/.fig/shell/bashrc.pre.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.pre.bash"
-#~/.bashrc: executed by bash(1) for non-login shells.
+# ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
@@ -103,8 +101,8 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f ~/.bashrc_aliases ]; then
+    . ~/.bashrc_aliases
 fi
 
 # bash aliases master file for ssh connectors
@@ -117,6 +115,7 @@ if [ -f ~/.bash_functions ]; then
     . ~/.bash_functions
 fi
 
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -127,6 +126,12 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+
+# SYSTEM COMMANDS LOGGING EXECUTION
+whoami="\$(whoami)@\$(echo \$SSH_CONNECTION | awk '{print \$1}')"
+export PROMPT_COMMAND='RETRN_VAL=\$?;logger -p local6.debug "\$whoami [$$] \$(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//" )"'
+
 
 # LOG ALL COMMANDS TO /VARLOG/COMMANDS
 # export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug "$(whoami) [$$]: $(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//" ) [$RETRN_VAL]"'
@@ -149,6 +154,186 @@ export PATH=$PATH:/opt
 
 #########################################################
 
+############################################################
+
+source ~/.autoenv/activate.sh
+
+alias arm='sudo chmod +x'
+
+alias url2pdf='wkhtmltopdf'
+alias pdf2txt=''
+
+################################################# START FORENSICS ALIASES
+#alias binwalk
+#alias scalpel
+#alias foremost
+################################################# END FORENSICS ALIASES
+
+
+################################################# START BASIC SYSTEM ALIASES
+alias displayservices='sudo service --status-all'
+
+alias diskuagewarning='disk_usage_warning'
+
+#alias backupomnisint='zip -r omnisint.zip /var/www/html'
+
+alias differentialbackup='sudo bash /usr/local/bin/standalone/differential-backup.sh'
+alias incrementalbackup='sudo rsync -av --link-dest=<previous_backup_directory> /var/www/html /media/csi/failover'
+alias filelevelbackup='sudo rsync -av --delete /var/www/html/ /media/csi/failover/filelevelbackup'
+
+alias diskimage='sudo dd if=/dev/sda of=/media/csi/failover/omnisint.iso bs=4M status=progress'
+
+############################################################################## START SSH CONNECTORS ALIASES
+alias masterserver='ssh jeremy@masterserver'
+alias masterservercmd='ssh jeremy@masterserver -t'
+alias sshfsmasterserver='sshfs jeremy@masterserver:/ /home/csi/Masterserver'
+############################################################################## END SSH CONNECTORS ALIASES
+
+#alias remotediskimage='remotediskimage.sh /dev/sda masterserver /home/jeremy/omnisint-remote-disk-image.iso'
+#alias sshfsdiskimage='sshfs-remote-diskimage.sh /dev/sda /media/csi/remote remote-server:/home/jeremy/omnisint-remote-disk-image.iso'
+#alias sshfsdiskimage2='sshfs-remote-diskimage2.sh /dev/sda /media/csi/remote remote-server:/home/jeremy/omnisint-remote-disk-image.iso'
+
+alias reloadfstabpartitions='sudo systemctl daemon-reload'
+#alias createsystemdservice=''
+
+###################################################################################################### START CRUCIAL BASHRC FUNCTIONS
+
+function disk_usage_warning() {
+    local THRESHOLD=90  # Set the disk space utilization threshold in percentage
+
+    local UTILIZATION=$(df -h --output=pcent / | awk 'NR==2 {print substr($1, 1, length($1)-1)}')
+
+    if [ "$UTILIZATION" -ge "$THRESHOLD" ]; then
+        echo "Warning: Disk space utilization is $UTILIZATION%."
+    fi
+
+    unset -f disk_usage_warning  # Unset the function to prevent it from running again
+}
+
+
+function takeowership() {
+  if [ -z "$1" ]; then
+    echo "Please provide a directory path."
+    return 1
+  fi
+
+  if [ ! -d "$1" ]; then
+    echo "The provided path is not a directory."
+    return 1
+  fi
+
+  sudo chown -R csi:csi "$1"
+  sudo chmod 775 "$1"
+}
+
+
+function addtolinestart {
+  if [ $# -ne 2 ]; then
+    echo "Usage: addtolinestart 'line' file"
+    return 1
+  fi
+
+  line="$1"
+  file="$2"
+
+  # Insert line at start of each line
+  sed -i "s/^/$line /" "$file" 
+}
+
+function createsystemservice {
+
+}
+
+
+################################################
+
+# Define Omniscient HOMEDIR and BASE_DIR
+HOMEDIR="/home/csi/"
+
+# Define the Base directory
+BASE_DIR="/home/csi/gpt4all"	#All System Files, User Files, Logs Into/Output From Local BaseDir AI
+
+# OFF-PREM MASS STORAGE VARS
+OFF_PREM="/mnt/mass_storage"
+
+# New environment variables
+export WEBIFACE="/var/www/html/omniface"	# Immutable Web Dir Wordpress For Web UI Documentation
+export AIHOME="$BASE_DIR/.local/share/nomic.ai/GPT4All"	# New Home Dir For .Bin LLM Models CodeLlamma WizardUnsensored Groovy-Malformed 
+export AIDIGEST="$BASE_DIR/gpt4all/LocalDocs"	#Spool All System And User Docs To GPT4All
+export OPERATIONS="/opt"
+export CASES="/home/csi/Cases/"	# Read All Cases Into Gpt4All
+export LLMODELS="$BASE_DIR/llmodels/"
+
+export GPT4MODELS="/home/csi/.local/share/nomic.ai/GPT4All/"
+
+################################################
+
+alias mobileforensics='androtree
+'
+alias scriptman='python3 /usr/local/bin/ScriptMan.py'
+alias gpt4all='/home/csi/gpt4all/bin/chat'
+alias webmin='xdg-open https://csi.lan:10000'
+
+
+alias arm='sudo chmod +x'
+alias url2pdf='wkhtmltopdf'
+alias implement='sudo apt install -y'
+alias blowoff='sudo apt autoremove'
+alias dropoff='sudo apt remove'
+alias truncatelogs='sudo truncate -s 0 /var/log/syslog'
+alias nmapme='sudo nmap -sS localhost'
+
+
+export PATH=$PATH:/home/$(whoami)/.local/bin
+export PATH=$PATH:/home/$(whoami)/.bin
+export PATH=$PATH:/home/$(whoami)/bin
+
+export PATH=$PATH:/opt
+export PATH=$PATH:/usr/local/bin/omnisint
+
+
+
+
+################################################
+
+export PATH="$PATH:/home/jeremy/.local/bin"
+
+
+# JINA_CLI_BEGIN
+
+## autocomplete
+_jina() {
+  COMPREPLY=()
+  local word="${COMP_WORDS[COMP_CWORD]}"
+
+  if [ "$COMP_CWORD" -eq 1 ]; then
+    COMPREPLY=( $(compgen -W "$(jina commands)" -- "$word") )
+  else
+    local words=("${COMP_WORDS[@]}")
+    unset words[0]
+    unset words[$COMP_CWORD]
+    local completions=$(jina completions "${words[@]}")
+    COMPREPLY=( $(compgen -W "$completions" -- "$word") )
+  fi
+}
+
+complete -F _jina jina
+
+# session-wise fix
+ulimit -n 4096
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+# default workspace for Executors
+
+# JINA_CLI_END
+
+export NVM_DIR="/home/jerermy/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+export PATH="/home/jerermy/.local/bin:$PATH"
+export PATH=$PATH:/opt/fastchat/bin
+
+
+
 alias gkeywordspider='python3 /usr/local/bin/omnisint/googlekeywordspider.py'
 
 
@@ -166,18 +351,6 @@ alias implement='sudo apt install -y'
 alias blowoff='sudo apt autoremove'
 alias dropoff='sudo apt remove'
 
-alias truncatelogs='sudo truncate -s 0 /var/log/syslog'
-
-alias dc1='ssh jeremy@datacenter'
-alias csi='ssh csi@csi'
-alias sshfsdc1='sshfs jeremy@datacenter:/ ~/Pi'
-alias sshfscsi='sshfs csi@csi:/home/csi/ ~/CSI'
-
-alias nmapme='sudo nmap -sS localhost'
-
-alias exclude="'grep -v -wE 'exclude1|exclude2'"
-
-##########################################################
 
 alias displayservices='sudo service --status-all'
 alias search='sudo apt-cache search'

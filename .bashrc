@@ -151,22 +151,20 @@ export PATH=$PATH:/var/www/html/scripts
 export PATH=$PATH:/var/www/html
 export PATH=$PATH:/opt
 
-
-#########################################################
-
 ############################################################
 
 source ~/.autoenv/activate.sh
 
 alias arm='sudo chmod +x'
-
 alias url2pdf='wkhtmltopdf'
 alias pdf2txt=''
 
 ################################################# START FORENSICS ALIASES
+
 #alias binwalk
 #alias scalpel
 #alias foremost
+
 ################################################# END FORENSICS ALIASES
 
 
@@ -268,8 +266,7 @@ export GPT4MODELS="/home/csi/.local/share/nomic.ai/GPT4All/"
 
 ################################################
 
-alias mobileforensics='androtree
-'
+alias mobileforensics='androtree'
 alias scriptman='python3 /usr/local/bin/ScriptMan.py'
 alias gpt4all='/home/csi/gpt4all/bin/chat'
 alias webmin='xdg-open https://csi.lan:10000'
@@ -288,8 +285,7 @@ export PATH=$PATH:/home/$(whoami)/.local/bin
 export PATH=$PATH:/home/$(whoami)/.bin
 export PATH=$PATH:/home/$(whoami)/bin
 
-export PATH=$PATH:/opt
-export PATH=$PATH:/usr/local/bin/omnisint
+
 
 
 

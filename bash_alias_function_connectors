@@ -1,0 +1,15 @@
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# bash aliases master file for ssh connectors
+if [ -f ~/.bash_connectors ]; then
+    . ~/.bash_connectors
+fi
+
+# bash functions master file
+if [ -f ~/.bash_functions ]; then
+    . ~/.bash_functions
+fi
+

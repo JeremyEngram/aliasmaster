@@ -1,5 +1,0 @@
-alias dc1='ssh jeremy@datacenter'
-alias csi='ssh csi@csi'
-
-alias sshfsdc1='sshfs jeremy@datacenter:/ ~/Pi'
-alias sshfscsi='sshfs csi@csi:/home/csi/ ~/CSI'

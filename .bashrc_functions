@@ -1,22 +1,81 @@
-# custom bashrc functions examples of inline scripts and continuously running loops automated conditional logical procresses to be run in the background
+
+#sudo inotifywait -m -r -e modify,create,delete,move /var/www/html | while read path action file; do
+#  echo "$(date): $file $action" >> /var/log/apache2/changes.log
+#echo "logging active apache lamp directory and file changes to:   /var/log/apache2/changes.log  
+#done; clear 
+#echo
 
 
-function gpio_control() {
-    # Set GPIO pin number
-    GPIO_PIN=$1
 
-    # Set GPIO pin as output
-    gpio mode $GPIO_PIN out
-
-    # Turn on GPIO pin
-    gpio write $GPIO_PIN 1
-
-    # Wait for 5 seconds
-    sleep 5
-
-    # Turn off GPIO pin
-    gpio write $GPIO_PIN 0
+# Function to generate documentation for a directory of Bash scripts
+generate_documentation() {
+    local input_directory="$1"
+    local output_directory="$2"
+    
+    # Create the output directory if it doesn't exist
+    mkdir -p "$output_directory"
+    
+    # Loop through each script in the input directory
+    for script in "$input_directory"/*.sh; do
+        # Check if the file is a regular file
+        if [ -f "$script" ]; then
+            # Extract the file name without the path and extension
+            script_name=$(basename "${script%.sh}")
+            
+            # Generate the output Markdown file name
+            output_markdown="$output_directory/${script_name}_documentation.md"
+            
+            # Run the shdoc-generator.sh script
+            ./shdoc-generator.sh "$script" "$output_markdown"
+            
+            if [ "$?" -eq 0 ]; then
+                echo "Documentation for $script_name generated and saved to $output_markdown."
+            else
+                echo "Documentation generation for $script_name failed."
+            fi
+        fi
+    done
 }
+
+# Usage
+generate_documentation "/path/to/scripts" "/path/to/documentation"
+
+
+
+
+cgreplinks() {
+  if [ -z "$1" ]; then
+    echo "Usage: cgreplinks <URL>"
+  else
+    curl -s "$1" | grep -Eo 'href="[^"]+"' | sed -E 's/href=//;s/"//g'
+  fi
+}
+
+wgreplinks() {
+  if [ -z "$1" ]; then
+    echo "Usage: wgreplinks <URL>"
+  else
+    wget -q -O - "$1" | grep -Eo 'href="[^"]+"' | sed -E 's/href=//;s/"//g'
+  fi
+}
+
+
+
+langchain() {
+  python3 -m /env/venv
+  npm install -m langchain
+}
+
+langflow() {
+  npm install langflow
+}
+
+flowise() {
+  npm start flowise
+  xdg-open https://$hostname:3000
+}
+
+
 
 
 function logerr () { 

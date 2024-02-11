@@ -152,3 +152,29 @@ function set_network_mode() {
         return 1
     fi
 }
+
+
+function mywget() {
+    read -p "Enter the URL to download from: " url
+    read -p "Enter maximum recursion depth (e.g., 7): " recursion_depth
+    read -p "Enter download rate limit (e.g., 100k for 100 KB/s): " rate_limit
+    read -p "Ignore robots.txt? (yes/no): " ignore_robots
+    read -p "Enter file types to reject (comma-separated, no spaces, include *., e.g., *.gz,*.zip): " reject_types
+
+    # Format the reject types for wget
+    reject_types_formatted=$(echo $reject_types | tr ',' ' ')
+
+    # Determine robots.txt option
+    if [[ "$ignore_robots" == "yes" ]]; then
+        robots_option="-erobots=off"
+    else
+        robots_option=""
+    fi
+
+    # Construct the wget command
+    wget_command="wget -r -k -l $recursion_depth -E -nc $robots_option --wait=1 --limit-rate=$rate_limit -R \"$reject_types_formatted\" --user-agent=\"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36\" -o log.txt $url"
+
+    # Execute the wget command
+    echo "Executing: $wget_command"
+    eval $wget_command
+}

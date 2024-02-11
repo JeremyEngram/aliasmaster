@@ -3,10 +3,15 @@ alias url2pdf='wkhtmltopdf'
 alias implement='sudo apt install -y'
 alias blowoff='sudo apt autoremove'
 alias dropoff='sudo apt remove'
+alias findfile='find . -name'
+alias recterm="script -aq ~/term.log-$(date)"
 alias truncatelogs='sudo truncate -s 0 /var/log/syslog'
 alias nmapme='sudo nmap -sS localhost'
+alias networkrst='sudo service network-manager restart'
 alias exclude="'grep -v -wE 'exclude1|exclude2'"
-
+alias mkcd='mkcd(){ NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }'
+alias fixmissing='sudo dpkg --configure -a && sudo apt-get update --fix-missing'
 alias flippercli='google-chrome https://lab.flipper.net/'
 alias gorillaupdate='pip install --upgrade gorilla-cli --break-system-packages'
 alias killmonitormocde='sudo airmon-ng stop wlp3s0mon'
+alias startscripting='script -a -f /tmp/script_log.txt && cp /tmp/script_log.txt ~/Desktop/'

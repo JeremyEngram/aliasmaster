@@ -93,3 +93,62 @@ function mkcd() {
     cd "$1"
 }
 
+
+
+function save_script_log() {
+    local log_file="/tmp/script_log.txt"
+    local destination="${1:-~/Desktop/script_log.txt}"
+
+    # Start script command with appending and flush options
+    script -a -f "$log_file"
+
+    # Check if script command succeeded
+    if [ $? -eq 0 ]; then
+        # Copy the log file to the specified destination, defaulting to ~/Desktop
+        cp "$log_file" "$destination"
+        echo "Log file saved to $destination"
+    else
+        echo "Script command failed."
+        return 1
+    fi
+}
+
+
+function find_and_remove_all() {
+    read -p "Enter filename pattern to find and remove: " pattern
+
+    # Check if user input is empty
+    if [[ -z "$pattern" ]]; then
+        echo "No pattern provided. Exiting."
+        return 1
+    fi
+
+    # Use find command safely with proper quoting to handle filenames with spaces and special characters
+    find . -type f -name "$pattern" -print0 | xargs -0 -r rm -f
+
+    echo "Files matching pattern '$pattern' have been removed."
+}
+
+
+function set_network_mode() {
+    local interface="${1:-wlan0}" # Default to wlan0 if no argument is provided
+    local mode="$2" # The desired mode ('managed' or 'monitor')
+
+    # Validate mode input
+    if [[ "$mode" != "managed" && "$mode" != "monitor" ]]; then
+        echo "Invalid mode specified. Please choose 'managed' or 'monitor'."
+        return 1
+    fi
+
+    echo "Setting $interface to $mode mode..."
+    sudo ifconfig "$interface" down
+    sudo iwconfig "$interface" mode "$mode"
+    sudo ifconfig "$interface" up
+
+    if [ $? -eq 0 ]; then
+        echo "$interface is now in $mode mode."
+    else
+        echo "Failed to set $interface to $mode mode."
+        return 1
+    fi
+}
